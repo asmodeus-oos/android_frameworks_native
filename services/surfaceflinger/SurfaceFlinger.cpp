@@ -7694,6 +7694,11 @@ status_t SurfaceFlinger::onTransact(uint32_t code, const Parcel& data, Parcel* r
                 }
 
                 updateColorMatrixLocked();
+                // Always re-send to HWC: after panel power-on the composed matrix is
+                // often unchanged in SF, so colorMatrixChanged would stay false and
+                // Night Light PCC would not be restored (cold tone flash on wake).
+                mCurrentState.colorMatrixChanged = true;
+                setTransactionFlags(eTransactionNeeded);
                 return NO_ERROR;
             }
             case 1016: { // Unused.
